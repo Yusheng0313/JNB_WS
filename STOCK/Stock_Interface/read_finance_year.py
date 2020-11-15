@@ -12,6 +12,16 @@ months = {'1','2','3','4'}
 # In[ ]:
 
 
+
+# 读取股票名字
+def read_companyInfo(stock_code):
+    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/TuShare/stock_list.xls' ,index_col=False)
+    
+    df = df.query( "symbol=='" + stock_code + "'")       
+    stock_name =  df['name'].values[0]
+   
+    return stock_name
+
 # 读取BPS每股净资产季度转年
 def read_bps(stock_code):
     
