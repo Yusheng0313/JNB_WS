@@ -11,7 +11,23 @@ years = {'2001','2002','2003','2004','2005','2006','2007','2008','2009','2010',
 months = {'1','2','3','4'}
 # In[ ]:
 
+# 读取所有股票数据
+def read_newyear():
+    df = pd.read_csv('../JN_DataWarehouse/stock_analysis/TuShare/new_year.csv' ,index_col=False)
+    
+    del df['Unnamed: 0']
+    return df
 
+def read_stock(df_stock, stock_code, startDate, endDate):
+    
+    df = df_stock.query("ts_code.str.startswith('"+stock_code+"')",engine='python')    
+    df = df.query("trade_date > "+startDate+" & trade_date < "+endDate+"")
+    
+    # 日期转换
+    df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
+    df["trade_date"] = df['trade_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    
+    return df
 
 # 读取股票名字
 def read_companyInfo(stock_code):

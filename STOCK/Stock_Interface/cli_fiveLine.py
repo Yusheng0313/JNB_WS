@@ -4,13 +4,7 @@ from pandas import DataFrame
 
 def build_mode(df_stock, stock_code, startDate, endDate):
     
-    df = df_stock.query("ts_code.str.startswith('"+stock_code+"')",engine='python')
-    
-    df = df.query("trade_date > "+startDate+" & trade_date < "+endDate+"")
-    
-    # 日期转换
-    df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
-    df["trade_date"] = df['trade_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    df = df_stock.copy()
     
     # 线性回归
     from sklearn import linear_model
@@ -46,14 +40,11 @@ def build_mode(df_stock, stock_code, startDate, endDate):
     return df
 
 
-def show_save_image(df, stock_code):
+def show_save_image(df, stock_code, stock_name):
     
     import plotly.graph_objects as go
     import plotly.io as pio
-    from Stock_Interface import read_finance_year
-    
-    stock_name =  read_finance_year.read_companyInfo(stock_code)
- 
+  
     fig = go.Figure()
     for i in ['close','priceTL','TL-2SD', 'TL-SD', 'TL+SD', 'TL+2SD']:
         fig.add_trace(
