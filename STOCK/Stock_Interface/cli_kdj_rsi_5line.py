@@ -2,64 +2,34 @@
 import pandas as pd
 from pandas import DataFrame
 import talib
+from Stock_Interface import cli_fiveLine
+from Stock_Interface import cli_rsi
+from Stock_Interface import cli_kdj
+pd.options.plotting.backend = "plotly"
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
-def build_mode(df_stock, stock_code, startDate, endDate):
+def show_fig(df, stock_code, stock_name, startDate, endDate):
     
-    df = df_stock.copy()
+    df_fiveline = cli_fiveLine.build_mode(df, stock_code, startDate, endDate)    
+    df_rsi = cli_rsi.build_mode(df, stock_code, startDate, endDate)    
+    df_kdj = cli_kdj.build_mode(df, stock_code, startDate, endDate)
     
-    if df.empty ==True:
-        print(" df is empty ")
-        sys.exit(2)
- 
-    #df = df[ df['trade_date'] > '2020-01-01']
-    if len(df) <10:
-        print(" len(df) <10 ")
-        sys.exit(2)
 
-    df['ma10'] = df['close'].rolling(window=10).mean()
-    df.index = pd.to_datetime(df.trade_date)
-    dw = pd.DataFrame()
-    dw['trade_date'] = df.trade_date
-    #  baike.baidu.com/item/rsi顺势指标
-    dw['rsi6'] = talib.RSI(df.close, timeperiod=6)
-    dw['rsi12'] = talib.RSI(df.close, timeperiod=12)
-    dw['rsi24'] = talib.RSI(df.close, timeperiod=24)
-    print("rsi6={0:.1f} , rsi12={1:.1f}, rsi24={1:.1f}".format(dw['rsi6'][-1], dw['rsi12'][-1], dw['rsi24'][-1]))
+    fig = make_subplots(rows=3, cols=1)
+    #fig.append_trace(go.Scatter( x=df['trade_date'], y=df['close'],) , row=1, col=1)
     
-    return dw
-
-
-def show_save_image(dw, stock_code):
+    for i in ['close','priceTL','TL-2SD', 'TL-SD', 'TL+SD', 'TL+2SD']:
+        fig.add_trace(go.Scatter( x=df_fiveline['trade_date'], y=df_fiveline[i], name=i ) , row=1, col=1)
     
-    import plotly.graph_objects as go
-    import plotly.io as pio
-    from Stock_Interface import read_finance_year
+    fig.append_trace(go.Scatter( x=df_kdj['trade_date'], y=df_kdj['K'], name='K') , row=2, col=1)
+    fig.append_trace(go.Scatter( x=df_kdj['trade_date'], y=df_kdj['D'], name='D') , row=2, col=1)
+    fig.append_trace(go.Scatter( x=df_kdj['trade_date'], y=df_kdj['J'], name='J') , row=2, col=1)
     
-    stock_name =  read_finance_year.read_companyInfo(stock_code)
- 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=dw['trade_date'], y=dw['rsi6'], mode='lines',
-            name='rsi6',
-            #line=dict(color=colors[i], width=line_size[i]),
-            connectgaps=True,
-        ))
-    fig.add_trace(go.Scatter(x=dw['trade_date'], y=dw['rsi12'], mode='lines',
-            name='rsi12',
-            connectgaps=True,
-        ))
-    fig.add_trace(go.Scatter(x=dw['trade_date'], y=dw['rsi24'], mode='lines',
-            name='rsi24',
-            connectgaps=True,
-        ))
+    fig.append_trace(go.Scatter( x=df_rsi['trade_date'], y=df_rsi['rsi6'], name='rsi6') , row=3, col=1)
 
-    fig.update_layout(
-        title_text = stock_code + " " +stock_name,
-        #height = 300,width = 900,    
-        margin = {'t':50, 'b':50, 'l':50}
-    )
+    fig.update_layout(height=600, width=1000, title_text=stock_code+' '+stock_name)
     fig.show()
     
-    #图片保存本地， 1.png 即保存到当前目录  D:\\指定路径     
-    #pio.write_image(fig, 'D:\\1.png')
-    
     return fig
+
