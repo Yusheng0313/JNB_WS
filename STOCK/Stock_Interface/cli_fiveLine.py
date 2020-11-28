@@ -2,10 +2,8 @@
 import pandas as pd
 from pandas import DataFrame
 
-def build_mode(df_stock, stock_code, startDate, endDate):
-    
-    df = df_stock.copy()
-    
+def build_mode(df, stock_code, stock_name, startDate, endDate):
+       
     # 线性回归
     from sklearn import linear_model
     import numpy as np
@@ -36,6 +34,7 @@ def build_mode(df_stock, stock_code, startDate, endDate):
     df['TL-SD'] = df['priceTL']-df['SD']
     df['TL+2SD'] = df['priceTL']+2*df['SD']
     df['TL+SD'] = df['priceTL']+df['SD']
+    df['name'] = stock_name
     
     return df
 

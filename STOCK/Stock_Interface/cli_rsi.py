@@ -3,10 +3,8 @@ import pandas as pd
 from pandas import DataFrame
 import talib
 
-def build_mode(df_stock, stock_code, startDate, endDate):
-    
-    df = df_stock.copy()
-    
+def build_mode(df, stock_code, stock_name, startDate, endDate):
+        
     if df.empty ==True:
         print(" df is empty ")
         sys.exit(2)
@@ -20,11 +18,13 @@ def build_mode(df_stock, stock_code, startDate, endDate):
     df.index = pd.to_datetime(df.trade_date)
     dw = pd.DataFrame()
     dw['trade_date'] = df.trade_date
+    dw['trade_code'] = stock_code
+    dw['name'] = stock_name
     #  baike.baidu.com/item/rsi顺势指标
     dw['rsi6'] = talib.RSI(df.close, timeperiod=6)
     dw['rsi12'] = talib.RSI(df.close, timeperiod=12)
     dw['rsi24'] = talib.RSI(df.close, timeperiod=24)
-    print("rsi6={0:.1f} , rsi12={1:.1f}, rsi24={1:.1f}".format(dw['rsi6'][-1], dw['rsi12'][-1], dw['rsi24'][-1]))
+    #print("rsi6={0:.1f} , rsi12={1:.1f}, rsi24={1:.1f}".format(dw['rsi6'][-1], dw['rsi12'][-1], dw['rsi24'][-1]))
     
     return dw
 

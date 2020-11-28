@@ -21,7 +21,7 @@ def read_newyear():
 def read_stock(df_stock, stock_code, startDate, endDate):
     
     df = df_stock.query("ts_code.str.startswith('"+stock_code+"')",engine='python')    
-    df = df.query("trade_date > "+startDate+" & trade_date < "+endDate+"")
+    df = df.query("trade_date > "+startDate+" & trade_date <= "+endDate+"")
     
     # 日期转换
     df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
