@@ -3,7 +3,7 @@ import pandas as pd
 from pandas import DataFrame
 import talib
 
-def build_mode(df, stock_code, startDate, endDate):
+def build_mode(df, stock_code, stock_name, startDate, endDate):
     
     # 同花顺 KDJ 算法 , 
     # rolling(9, min_periods=9).min() 是每9个数为一个窗口取最小值，不足9个为NaN
@@ -17,6 +17,8 @@ def build_mode(df, stock_code, startDate, endDate):
     # ewm(com=2).mean() 指数加权移动平均线
     dw = pd.DataFrame()
     dw['trade_date'] = df['trade_date']
+    dw['trade_code'] = stock_code
+    dw['name'] = stock_name
     dw['K'] = pd.DataFrame(rsv).ewm(com=2).mean()
     dw['D'] = dw['K'].ewm(com=2).mean()
     dw['J'] = 3 * dw['K'] - 2 * dw['D']
