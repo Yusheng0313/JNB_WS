@@ -5,14 +5,15 @@ import talib
 
 def build_mode(df, stock_code, stock_name, startDate, endDate):
         
-    if df.empty ==True:
-        print(" df is empty ")
+    if df.empty == True:
+        print(" df is empty " + stock_code) 
         sys.exit(2)
  
     #df = df[ df['trade_date'] > '2020-01-01']
-    if len(df) <10:
-        print(" len(df) <10 ")
-        sys.exit(2)
+#     if len(df) < 10:
+#         print(" len(df) < 10 "+stock_code)
+#         sys.exit(2)
+    
 
     df['ma10'] = df['close'].rolling(window=10).mean()
     df.index = pd.to_datetime(df.trade_date)
@@ -25,6 +26,7 @@ def build_mode(df, stock_code, stock_name, startDate, endDate):
     dw['rsi12'] = talib.RSI(df.close, timeperiod=12)
     dw['rsi24'] = talib.RSI(df.close, timeperiod=24)
     #print("rsi6={0:.1f} , rsi12={1:.1f}, rsi24={1:.1f}".format(dw['rsi6'][-1], dw['rsi12'][-1], dw['rsi24'][-1]))
+
     
     return dw
 
