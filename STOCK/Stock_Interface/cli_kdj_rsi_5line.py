@@ -11,9 +11,9 @@ import plotly.graph_objects as go
 
 def show_fig(df, stock_code, stock_name, startDate, endDate):
     
-    df_fiveline = cli_fiveLine.build_mode(df, stock_code, startDate, endDate)    
-    df_rsi = cli_rsi.build_mode(df, stock_code, startDate, endDate)    
-    df_kdj = cli_kdj.build_mode(df, stock_code, startDate, endDate)
+    df_fiveline = cli_fiveLine.build_mode(df, stock_code, stock_name, startDate, endDate)    
+    df_rsi = cli_rsi.build_mode(df, stock_code, stock_name, startDate, endDate)    
+    df_kdj = cli_kdj.build_mode(df, stock_code, stock_name, startDate, endDate)
     
 
     fig = make_subplots(rows=3, cols=1)

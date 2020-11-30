@@ -19,7 +19,7 @@ def build_mode(df, stock_code, stock_name, startDate, endDate):
     df.index = pd.to_datetime(df.trade_date)
     dw = pd.DataFrame()
     dw['trade_date'] = df.trade_date
-    dw['trade_code'] = stock_code
+    dw['ts_code'] = df.ts_code
     dw['name'] = stock_name
     #  baike.baidu.com/item/rsi顺势指标
     dw['rsi6'] = talib.RSI(df.close, timeperiod=6)
