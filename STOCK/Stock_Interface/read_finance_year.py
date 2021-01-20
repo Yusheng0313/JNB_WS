@@ -13,7 +13,7 @@ months = {'1','2','3','4'}
 
 # 读取所有股票数据
 def read_newyear():
-    df = pd.read_csv('../JN_DataWarehouse/stock_analysis/TuShare/new_year.csv' ,index_col=False)
+    df = pd.read_csv('../JN_DataWarehouse/stock_analysis/TuShare/new_year.csv' ,index_col=False, converters = {'symbol':str})
     
     del df['Unnamed: 0']
     return df
@@ -26,6 +26,16 @@ def read_stock(df_stock, stock_code, startDate, endDate):
     # 日期转换
     df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
     df["trade_date"] = df['trade_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    
+    return df
+
+def read_stockmore(df_stock, startDate, endDate):
+    
+    df = df_stock.query("trade_date > "+startDate+" & trade_date <= "+endDate+"",engine='python')
+    
+    # 日期转换
+    #df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
+    #df["trade_date"] = df['trade_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     
     return df
 
@@ -54,7 +64,7 @@ def read_bps(stock_code):
     df.rename(columns={'股票代码':'ts_code'}, inplace = True)
     df.rename(columns={'股票简称':'name'}, inplace = True)
     
-    df = df.query( "ts_code.str.contains('" + stock_code + "')")                
+    df = df.query( "ts_code.str.startswith('" + stock_code + "')",engine='python')                 
    
     return df
 
@@ -74,7 +84,7 @@ def read_roe(stock_code):
     df.rename(columns={'股票代码':'ts_code'}, inplace = True)
     df.rename(columns={'股票简称':'name'}, inplace = True)
     
-    df = df.query( "ts_code.str.contains('" + stock_code + "')")                
+    df = df.query( "ts_code.str.startswith('" + stock_code + "')",engine='python')           
    
     return df
 	
@@ -94,7 +104,7 @@ def read_pe(stock_code):
     df.rename(columns={'股票代码':'ts_code'}, inplace = True)
     df.rename(columns={'股票简称':'name'}, inplace = True)
     
-    df = df.query( "ts_code.str.contains('" + stock_code + "')")                
+    df = df.query( "ts_code.str.startswith('" + stock_code + "')",engine='python')              
    
     return df
 
@@ -114,7 +124,7 @@ def read_eps(stock_code):
     df.rename(columns={'股票代码':'ts_code'}, inplace = True)
     df.rename(columns={'股票简称':'name'}, inplace = True)
     
-    df = df.query( "ts_code.str.contains('" + stock_code + "')")
+    df = df.query( "ts_code.str.startswith('" + stock_code + "')",engine='python')  
    
     return df
 
@@ -129,7 +139,7 @@ def read_bonus(stock_code):
     df.rename(columns={'股票简称':'name'}, inplace = True)
     #df.rename(columns={2020:'2020'}, inplace = True)
     
-    df = df.query( "ts_code.str.contains('" + stock_code + "')")                
+    df = df.query( "ts_code.str.startswith('" + stock_code + "')",engine='python')   
    
     return df
 

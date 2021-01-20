@@ -55,8 +55,8 @@ def show_save_image(df, stock_code, stock_name):
         )
 
     fig.update_layout(
-        xaxis_title="时间",
-        yaxis_title="收盘单价",
+        xaxis_title="年月",
+        yaxis_title="单价",
         font=dict(
             family="Courier New, monospace",
             size=18,
