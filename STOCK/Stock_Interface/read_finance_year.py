@@ -6,7 +6,8 @@ from pandas import concat
 from pandas import merge
 
 years = {'2001','2002','2003','2004','2005','2006','2007','2008','2009','2010',
-                 '2011','2012','2013','2014','2015','2016','2017','2018','2019','2020'}
+         '2011','2012','2013','2014','2015','2016','2017','2018','2019','2020',
+         '2021','2022'}
 
 months = {'1','2','3','4'}
 # In[ ]:
@@ -26,6 +27,21 @@ def read_stock(df_stock, stock_code, startDate, endDate):
     # 日期转换
     df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
     df["trade_date"] = df['trade_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    
+    return df
+
+# 读取股票前复权数据
+def read_stock1(df_stock, stock_code, startDate, endDate):
+    
+    df = df_stock.query("ts_code.str.startswith('"+stock_code+"')",engine='python')    
+    df = df.query("trade_date > "+startDate+" & trade_date <= "+endDate+"")
+    
+    # 日期转换
+    df["trade_date"] = pd.to_datetime(df["trade_date"], format='%Y%m%d')
+    df["trade_date"] = df['trade_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    
+    # close 换成 close1前复权
+    df["close"] = df["close1"]
     
     return df
 
@@ -51,7 +67,7 @@ def read_companyInfo(stock_code):
 # 读取BPS每股净资产季度转年
 def read_bps(stock_code):
     
-    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/每股剩资产BPS.xlsx' ,index_col=False)
+    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/每股剩资产BPS.xlsx' ,index_col=False, converters = {'股票代码':str})
     df.pop('序号')
         
     for x in years:
@@ -71,7 +87,7 @@ def read_bps(stock_code):
 # 读取roe净资产收益率季度转年
 def read_roe(stock_code):
 
-    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/净资产收益率ROE.xlsx' ,index_col=False)
+    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/净资产收益率ROE.xlsx' ,index_col=False, converters = {'股票代码':str})
     df.pop('序号')
 
     for x in years:
@@ -91,7 +107,7 @@ def read_roe(stock_code):
 # 读取P/E市盈率季度转年
 def read_pe(stock_code):
 
-    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/市盈率PE.xlsx' ,index_col=False)
+    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/市盈率PE.xlsx' ,index_col=False, converters = {'股票代码':str})
     df.pop('序号')
 
     for x in years:
@@ -105,13 +121,14 @@ def read_pe(stock_code):
     df.rename(columns={'股票简称':'name'}, inplace = True)
     
     df = df.query( "ts_code.str.startswith('" + stock_code + "')",engine='python')              
-   
+    #df = df.loc[df.ts_code == stock_code]
+    
     return df
 
 # 读取EPS每股收益
 def read_eps(stock_code):
 
-    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/每股收益EPS.xlsx' ,index_col=False)
+    df = pd.read_excel('../JN_DataWarehouse/stock_analysis/stockinfo/每股收益EPS.xlsx' ,index_col=False, converters = {'股票代码':str})
     df.pop('序号')
 
     for x in years:
@@ -187,8 +204,11 @@ def cal_roe(df_roe, df_result):
 def cal_pe(df_pe, df_result):
     
     data2 = {"year":["2001","2002","2003","2004","2005","2006","2007","2008","2009","2010",
-        "2011","2012","2013","2014","2015","2016","2017","2018","2019","2020"],
-        "pe":["","","","","","","","","","","","","","","","","","","",""]}
+                     "2011","2012","2013","2014","2015","2016","2017","2018","2019","2020",
+                     "2021"],
+        "pe":["","","","","","","","","","",
+              "","","","","","","","","","",
+             ""]}
     
     df_year = DataFrame(data2, dtype='int64')
     

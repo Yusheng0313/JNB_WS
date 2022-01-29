@@ -3,7 +3,8 @@ import pandas as pd
 from pandas import DataFrame
 from pandas import DataFrame
 from pandas import concat
-
+from Stock_Interface import read_finance_year
+import datetime
 
 
 # 更新股票基础信息 
@@ -100,14 +101,14 @@ def build_daily(pro, year):
 def build_stock_newyear():
     years = ['2001','2002','2003','2004','2005','2006','2007','2008','2009','2010',
              '2011','2012','2013','2014','2015','2016','2017','2018','2019','2020',
-             '2021']
-    df = read_year('2011')
+             '2021','2022']
+    df = read_year('2000')
         
     for x in years:
         df1 = read_year(x)
         df = concat([df,df1],ignore_index=True).drop_duplicates() 
     
-    del df['Unnamed: 0']
+    #del df['Unnamed: 0']
     
     to_newyear(df)
     
@@ -148,3 +149,31 @@ def build_adjfactor(pro, year):
     print('ok!')
     
 
+def build_stock_newyear_adjfactor():
+    
+    df_all_adjfactor = read_adjfactor('20010101','20250215')
+    
+    print(df_all_adjfactor.loc[df_all_adjfactor.ts_code == '000001.SZ',['ts_code','trade_date','adj_factor']].groupby(['ts_code','trade_date','adj_factor']).count().tail(5))
+    
+    today = datetime.date.today()
+    today = today -  datetime.timedelta(2)
+    countDate = today.strftime('%Y%m%d')
+    countDate
+    
+    df_new_adjfactor = read_adjfactor(countDate,countDate)
+    
+    df_new_adjfactor = df_new_adjfactor.loc[df_new_adjfactor.ts_code.notnull(),['ts_code','adj_factor']]
+    
+    df_alldata = read_finance_year.read_newyear()
+    
+    df_newalldata = pd.merge(df_alldata, df_all_adjfactor, on=['trade_date','ts_code'])
+    df_newalldata = pd.merge(df_newalldata, df_new_adjfactor, on=['ts_code'])
+    df_newalldata['close1'] = (df_newalldata['close']*df_newalldata['adj_factor_x']/df_newalldata['adj_factor_y']).values.astype(float).round(3)
+    
+    print('\n')
+    print(df_newalldata[(df_newalldata.ts_code == '601939.SH') & (df_newalldata.trade_date > 20200615)].tail(20))
+    
+    #保存最新结果
+    to_newyear(df_newalldata)
+    print('year!!')
+    
